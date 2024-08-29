@@ -1,0 +1,71 @@
+-- Users Table
+CREATE TABLE Users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    role ENUM('admin', 'instructor', 'student'),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Courses Table
+CREATE TABLE Courses (
+    course_id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255),
+    description TEXT,
+    instructor_id INT,
+    duration INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (instructor_id) REFERENCES Users(user_id)
+);
+
+-- Modules Table
+CREATE TABLE Modules (
+    module_id INT PRIMARY KEY AUTO_INCREMENT,
+    course_id INT,
+    title VARCHAR(255),
+    description TEXT,
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+
+-- Sessions Table
+CREATE TABLE Sessions (
+    session_id INT PRIMARY KEY AUTO_INCREMENT,
+    module_id INT,
+    title VARCHAR(255),
+    content TEXT,
+    session_type ENUM('video', 'attendClass'; 'tasks'),
+    FOREIGN KEY (module_id) REFERENCES Modules(module_id)
+);
+
+-- Assignments Table
+CREATE TABLE Assignments (
+    assignment_id INT PRIMARY KEY AUTO_INCREMENT,
+    session_id INT,
+    title VARCHAR(255),
+    description TEXT,
+    due_date DATE,
+    FOREIGN KEY (session_id) REFERENCES Sessions(session_id)
+);
+
+-- Enrollments Table
+CREATE TABLE Enrollments (
+    enrollment_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    course_id INT,
+    enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES Users(user_id),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+
+-- Progress Table
+CREATE TABLE Progress (
+    progress_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    session_id INT,
+    status ENUM('not_started', 'in_progress', 'completed'),
+    last_accessed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES Users(user_id),
+    FOREIGN KEY (session_id) REFERENCES Sessions(session_id)
+);
